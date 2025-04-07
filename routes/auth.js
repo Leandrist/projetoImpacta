@@ -4,6 +4,38 @@ const pool = require('../database');
 const jwt = require('jsonwebtoken');
 const { hashPassword, verifyPassword } = require('../utils/passwordUtils');
 
+router.post('/register', async (req, res) => {
+    const { nome, email, senha, permissao_id = 2 } = req.body; // padrão: 2 leitor
+    
+    try {
+        const [existing] = await pool.execute(
+            'SELECT id FROM usuarios WHERE email = ?', 
+            [email]
+        );
+        
+        if (existing.length > 0) {
+            return res.status(400).json({ error: "Email já cadastrado" });
+        }
+
+        const { hash, salt } = await hashPassword(senha);
+
+        const [result] = await pool.execute(
+            'INSERT INTO usuarios (nome, email, senha, salt, permissao_id) VALUES (?, ?, ?, ?, ?)',
+            [nome, email, hash, salt, permissao_id]
+        );
+
+        res.status(201).json({ 
+            id: result.insertId,
+            nome,
+            email,
+            permissao_id
+        });
+    } catch (error) {
+        console.error("Erro no registro:", error);
+        res.status(500).json({ error: "Erro ao registrar usuário" });
+    }
+});
+
 router.post('/login', async (req, res) => {
     const { email, senha } = req.body;
     
