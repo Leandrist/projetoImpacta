@@ -109,7 +109,27 @@ const noticiasController = {
             console.error("Erro ao remover notícia:", error.message);
             res.status(500).json({ error: "Erro ao remover notícia." });
         }
+    },
+
+    listarRecentes: async (req, res) => {
+        try {
+            const sql = `
+                SELECT n.id, n.titulo, n.conteudo, n.data_publicacao, d.nome AS departamento_nome
+                FROM Noticias n
+                LEFT JOIN Departamentos d ON n.departamento_id = d.id
+                ORDER BY n.data_publicacao DESC
+                LIMIT 5
+            `;
+            const [result] = await pool.execute(sql);
+            res.json(result);
+        } catch (error) {
+            console.error("Erro ao listar notícias recentes:", error);
+            res.status(500).json({ error: "Erro ao listar notícias recentes." });
+        }
     }
+
+    
 };
+
 
 module.exports = noticiasController;

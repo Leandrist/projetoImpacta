@@ -4,6 +4,7 @@ const { authenticate, checkPermission } = require('../middlewares/auth');
 const noticiasController = require('../controllers/noticiasController');
 
 router.get('/', authenticate, noticiasController.listarNoticias);
+router.get('/recentes', noticiasController.listarRecentes);
 router.post('/', authenticate, checkPermission('editor'), noticiasController.criarNoticia);
 router.get('/:id', authenticate, noticiasController.buscarNoticia);
 router.put('/:id', authenticate, checkPermission('editor'), noticiasController.atualizarNoticia);

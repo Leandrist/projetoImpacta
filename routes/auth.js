@@ -50,7 +50,7 @@ router.post('/login', async (req, res) => {
         if (!users.length) return res.status(401).json({ error: "Credenciais inválidas" });
 
         const user = users[0];
-        const isValid = await verifyPassword(senha, user.senha_hash, user.salt);
+        const isValid = await verifyPassword(senha, user.senha, user.salt);
         
         if (!isValid) return res.status(401).json({ error: "Credenciais inválidas" });
 
@@ -77,6 +77,7 @@ router.post('/login', async (req, res) => {
         console.error(error);
         res.status(500).json({ error: "Erro ao fazer login" });
     }
-});
+})
+;
 
 module.exports = router;
